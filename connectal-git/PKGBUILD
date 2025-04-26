@@ -1,0 +1,46 @@
+# Maintainer: Thanadol Chomphoochan <t.chomphoochan@gmail.com>
+
+_pkgname=connectal
+pkgname=${_pkgname}-git
+pkgver=r9406.990b3a20
+pkgrel=1
+pkgdesc="A framework for software-driven hardware development."
+url="https://github.com/cambridgehackers/connectal"
+license=("MIT")
+source=("$_pkgname::git+https://github.com/tchomphoochan/connectal.git")
+md5sums=("SKIP")
+arch=("x86_64")
+depends=(
+  "python"
+  "python-ply"
+  "fpgamake"
+  "buildcache"
+  "bluespec-git"
+  "bluespec-contrib-git"
+)
+optdepends=(
+  "vivado"
+  "verilator"
+)
+makedepends=(
+  "git"
+  "linux-headers"
+)
+conflicts=("${_pkgname}")
+provides=("${_pkgname}")
+
+pkgver() {
+  cd "$srcdir/${_pkgname}"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$srcdir/${_pkgname}"
+  make all
+}
+
+package() {
+  cd "$srcdir/${_pkgname}"
+  make DESTDIR="$pkgdir" install
+  mv $pkgdir/lib $pkgdir/usr/lib
+}
